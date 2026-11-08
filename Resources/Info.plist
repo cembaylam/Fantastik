@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key><string>Fantastik</string>
+    <key>CFBundleDisplayName</key><string>Fantastik</string>
+    <key>CFBundleExecutable</key><string>Fantastik</string>
+    <key>CFBundleIdentifier</key><string>com.cembaylam.fantastik</string>
+    <key>CFBundleIconFile</key><string>AppIcon</string>
+    <key>CFBundlePackageType</key><string>APPL</string>
+    <key>CFBundleShortVersionString</key><string>1.0</string>
+    <key>CFBundleVersion</key><string>1</string>
+    <key>LSMinimumSystemVersion</key><string>26.0</string>
+    <key>LSApplicationCategoryType</key><string>public.app-category.productivity</string>
+    <key>NSHighResolutionCapable</key><true/>
+    <key>NSPrincipalClass</key><string>NSApplication</string>
+    <key>NSCalendarsUsageDescription</key><string>Fantastik shows and edits your calendar events.</string>
+    <key>NSCalendarsFullAccessUsageDescription</key><string>Fantastik shows and edits your calendar events.</string>
+    <key>NSRemindersUsageDescription</key><string>Fantastik shows your reminders alongside your events.</string>
+    <key>NSRemindersFullAccessUsageDescription</key><string>Fantastik shows your reminders alongside your events.</string>
+    <key>NSLocationWhenInUseUsageDescription</key><string>Fantastik uses your approximate location for the weather forecast and travel times.</string>
+    <key>NSLocationUsageDescription</key><string>Fantastik uses your approximate location for the weather forecast and travel times.</string>
+</dict>
+</plist>
