@@ -128,7 +128,7 @@ struct TimelineCalendarView: View {
                 ZStack(alignment: .topLeading) {
                     VStack(spacing: 0) {
                         ForEach(0..<24, id: \.self) { h in
-                            HourRow(hour: h, gutter: gutter).frame(height: hourHeight).id(h)
+                            HourRow(hour: h, gutter: gutter).frame(height: hourHeight, alignment: .top).id(h)
                         }
                     }
                     HStack(spacing: 0) {
