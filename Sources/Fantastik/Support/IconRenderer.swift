@@ -2,17 +2,21 @@ import AppKit
 
 /// Draws the app icon (with today's date, like a real calendar) and the menu bar glyph.
 enum IconRenderer {
-    static func appIcon(size: CGFloat, date: Date) -> NSImage {
+    static func appIcon(size: CGFloat, date: Date = Date()) -> NSImage {
         NSImage(size: NSSize(width: size, height: size), flipped: false) { rect in
-            let body = rect.insetBy(dx: size * 0.085, dy: size * 0.085)
-            let radius = body.width * 0.225
+            let body = rect.insetBy(dx: size * 0.097, dy: size * 0.097)
+            let radius = body.width * 0.27
             let path = NSBezierPath(roundedRect: body, xRadius: radius, yRadius: radius)
+            // Maps unit coordinates (origin top-left of the body) to the drawing rect.
+            func pt(_ u: CGFloat, _ v: CGFloat) -> NSPoint {
+                NSPoint(x: body.minX + u * body.width, y: body.maxY - v * body.height)
+            }
 
             NSGraphicsContext.saveGraphicsState()
             let shadow = NSShadow()
-            shadow.shadowColor = NSColor.black.withAlphaComponent(0.28)
-            shadow.shadowBlurRadius = size * 0.03
-            shadow.shadowOffset = NSSize(width: 0, height: -size * 0.012)
+            shadow.shadowColor = NSColor.black.withAlphaComponent(0.25)
+            shadow.shadowBlurRadius = size * 0.035
+            shadow.shadowOffset = NSSize(width: 0, height: -size * 0.014)
             shadow.set()
             NSColor.white.setFill()
             path.fill()
@@ -20,19 +24,55 @@ enum IconRenderer {
 
             NSGraphicsContext.saveGraphicsState()
             path.addClip()
-            NSGradient(colors: [NSColor.white, NSColor(white: 0.93, alpha: 1)])?.draw(in: body, angle: -90)
-            let bandH = body.height * 0.29
+            NSGradient(colors: [NSColor.white, NSColor(white: 0.965, alpha: 1)])?.draw(in: body, angle: -90)
+
+            // Grid lines below the header
+            let headerV: CGFloat = 0.252
+            NSColor(red: 0.66, green: 0.76, blue: 0.88, alpha: 0.95).setStroke()
+            for u: CGFloat in [0.213, 0.403, 0.593, 0.783] {
+                let l = NSBezierPath(); l.lineWidth = body.width * 0.007
+                l.move(to: pt(u, headerV)); l.line(to: pt(u, 1)); l.stroke()
+            }
+            for v: CGFloat in [0.29, 0.471, 0.651, 0.829] {
+                let l = NSBezierPath(); l.lineWidth = body.width * 0.007
+                l.move(to: pt(0, v)); l.line(to: pt(1, v)); l.stroke()
+            }
+
+            // Red header with a darker bottom edge
+            let bandH = body.height * headerV
             let band = NSRect(x: body.minX, y: body.maxY - bandH, width: body.width, height: bandH)
-            NSGradient(colors: [NSColor(red: 1.0, green: 0.37, blue: 0.30, alpha: 1), NSColor(red: 0.90, green: 0.16, blue: 0.17, alpha: 1)])?
+            NSGradient(colors: [NSColor(red: 0.93, green: 0.30, blue: 0.24, alpha: 1), NSColor(red: 0.92, green: 0.24, blue: 0.14, alpha: 1)])?
                 .draw(in: band, angle: -90)
+            NSColor(red: 0.70, green: 0.15, blue: 0.08, alpha: 1).setFill()
+            NSRect(x: band.minX, y: band.minY, width: band.width, height: body.width * 0.008).fill()
             NSGraphicsContext.restoreGraphicsState()
 
-            let c = Calendar.current
-            let weekday = date.formatted(.dateTime.weekday(.wide)).uppercased()
-            let day = "\(c.component(.day, from: date))"
-            draw(weekday, in: band, font: .systemFont(ofSize: body.width * 0.095, weight: .semibold), color: NSColor.white.withAlphaComponent(0.95), kern: body.width * 0.012)
-            let numRect = NSRect(x: body.minX, y: body.minY, width: body.width, height: body.height - bandH)
-            draw(day, in: numRect, font: .systemFont(ofSize: body.width * 0.5, weight: .medium), color: NSColor(white: 0.12, alpha: 1), kern: 0)
+            // Colored event tiles
+            let tile = body.width * 0.213
+            let tiles: [(CGFloat, CGFloat, NSColor, NSColor)] = [
+                (0.122, 0.378, NSColor(red: 0.35, green: 0.85, blue: 0.22, alpha: 1), NSColor(red: 0.36, green: 0.80, blue: 0.26, alpha: 1)),
+                (0.500, 0.562, NSColor(red: 1.00, green: 0.78, blue: 0.25, alpha: 1), NSColor(red: 1.00, green: 0.74, blue: 0.27, alpha: 1)),
+                (0.312, 0.736, NSColor(red: 0.22, green: 0.56, blue: 1.00, alpha: 1), NSColor(red: 0.38, green: 0.68, blue: 1.00, alpha: 1)),
+                (0.686, 0.738, NSColor(red: 0.95, green: 0.30, blue: 0.95, alpha: 1), NSColor(red: 0.93, green: 0.45, blue: 0.93, alpha: 1))
+            ]
+            for (u, v, top, bottom) in tiles {
+                let c = pt(u, v)
+                let r = NSRect(x: c.x - tile / 2, y: c.y - tile / 2, width: tile, height: tile)
+                let tp = NSBezierPath(roundedRect: r, xRadius: tile * 0.27, yRadius: tile * 0.27)
+                NSGraphicsContext.saveGraphicsState()
+                let glow = NSShadow()
+                glow.shadowColor = top.withAlphaComponent(0.55)
+                glow.shadowBlurRadius = size * 0.022
+                glow.shadowOffset = NSSize(width: 0, height: -size * 0.008)
+                glow.set()
+                top.setFill()
+                tp.fill()
+                NSGraphicsContext.restoreGraphicsState()
+                NSGraphicsContext.saveGraphicsState()
+                tp.addClip()
+                NSGradient(colors: [top, bottom])?.draw(in: r, angle: -90)
+                NSGraphicsContext.restoreGraphicsState()
+            }
             return true
         }
     }
